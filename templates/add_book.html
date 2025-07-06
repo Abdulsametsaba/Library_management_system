@@ -1,0 +1,211 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <h2>Yeni Kitap Ekle</h2>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input
+          type="text"
+          id="searchInput"
+          class="form-control"
+          placeholder="Kitap adı veya ISBN ile ara..."
+        />
+        <button class="btn btn-primary" type="button" id="searchButton">
+          Ara
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="searchResults" class="row mb-4" style="display: none">
+    <div class="col-12">
+      <h4>Arama Sonuçları</h4>
+      <div class="list-group" id="resultsList"></div>
+    </div>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="title" class="form-label">Kitap Adı</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="isbn" class="form-label">ISBN</label>
+          <input type="text" class="form-control" id="isbn" name="isbn" />
+        </div>
+
+        <div class="mb-3">
+          <label for="author" class="form-label">Yazar</label>
+          <input
+            type="text"
+            class="form-control"
+            id="author"
+            name="author"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="category_id" class="form-label">Kategori</label>
+          <select
+            class="form-select"
+            id="category_id"
+            name="category_id"
+            required
+          >
+            <option value="">Kategori Seçin</option>
+            {% for category in categories %}
+            <option value="{{ category[0] }}">{{ category[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="quantity" class="form-label">Adet</label>
+          <input
+            type="number"
+            class="form-control"
+            id="quantity"
+            name="quantity"
+            min="1"
+            value="1"
+            required
+          />
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">Açıklama</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Kapak Resmi</label>
+          <div id="coverPreview" class="mb-2" style="display: none">
+            <img
+              src=""
+              alt="Kapak Önizleme"
+              class="img-thumbnail"
+              style="max-height: 200px"
+            />
+          </div>
+          <input type="hidden" id="cover_url" name="cover_url" />
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kitap Ekle</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+    const searchResults = document.getElementById("searchResults");
+    const resultsList = document.getElementById("resultsList");
+
+    searchButton.addEventListener("click", performSearch);
+    searchInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        performSearch();
+      }
+    });
+
+    function performSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
+
+      fetch(`/books/search?q=${encodeURIComponent(query)}`)
+        .then((response) => response.json())
+        .then((books) => {
+          resultsList.innerHTML = "";
+          if (books.length === 0) {
+            resultsList.innerHTML =
+              '<div class="alert alert-info">Sonuç bulunamadı.</div>';
+          } else {
+            books.forEach((book) => {
+              const item = document.createElement("a");
+              item.href = "#";
+              item.className = "list-group-item list-group-item-action";
+              item.innerHTML = `
+                            <div class="d-flex">
+                                <img src="${book.cover_image}" alt="${
+                book.title
+              }" style="height: 100px; margin-right: 15px;">
+                                <div>
+                                    <h5 class="mb-1">${book.title}</h5>
+                                    <p class="mb-1">Yazar: ${book.authors.join(
+                                      ", "
+                                    )}</p>
+                                    <p class="mb-1">ISBN: ${book.isbn}</p>
+                                </div>
+                            </div>
+                        `;
+              item.addEventListener("click", function (e) {
+                e.preventDefault();
+                fillForm(book);
+              });
+              resultsList.appendChild(item);
+            });
+          }
+          searchResults.style.display = "block";
+        })
+        .catch((error) => {
+          console.error("Arama hatası:", error);
+          resultsList.innerHTML =
+            '<div class="alert alert-danger">Arama sırasında bir hata oluştu.</div>';
+          searchResults.style.display = "block";
+        });
+    }
+
+    function fillForm(book) {
+      document.getElementById("title").value = book.title || "";
+      document.getElementById("isbn").value = book.isbn || "";
+      document.getElementById("author").value = book.authors
+        ? book.authors.join(", ")
+        : "";
+      document.getElementById("description").value = book.description || "";
+
+      // Kategori seçimi için varsayılan olarak "Fantastik" kategorisini seç
+      const categorySelect = document.getElementById("category_id");
+      for (let i = 0; i < categorySelect.options.length; i++) {
+        if (
+          categorySelect.options[i].text.toLowerCase().includes("fantastik")
+        ) {
+          categorySelect.selectedIndex = i;
+          break;
+        }
+      }
+
+      // Miktar için varsayılan değer
+      document.getElementById("quantity").value = "1";
+
+      if (book.cover_image) {
+        document.getElementById("cover_url").value = book.cover_image;
+        const coverPreview = document.getElementById("coverPreview");
+        coverPreview.style.display = "block";
+        coverPreview.querySelector("img").src = book.cover_image;
+      }
+
+      searchResults.style.display = "none";
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <!-- Kitap Kapak Resmi -->
+    <div class="col-md-4">
+      <div class="card">
+        {% if book.cover_image %}
+        <img
+          src="{{ url_for('static', filename='uploads/covers/' + book.cover_image) }}"
+          class="card-img-top"
+          alt="{{ book.title }}"
+        />
+        {% else %}
+        <img
+          src="{{ url_for('static', filename='images/no-cover.jpg') }}"
+          class="card-img-top"
+          alt="Kapak resmi yok"
+        />
+        {% endif %} {% if session.get('role') == 'admin' %}
+        <div class="card-body">
+          <a
+            href="{{ url_for('edit_book', book_id=book.id) }}"
+            class="btn btn-warning w-100"
+          >
+            <i class="fas fa-edit"></i> Kitabı Düzenle
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Kitap Bilgileri -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">{{ book.title }}</h2>
+          <h5 class="text-muted">{{ book.author_name }}</h5>
+
+          <hr />
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong>Kategori:</strong> {{ book.category_name }}</p>
+              <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+              <p><strong>Toplam Kopya:</strong> {{ book.quantity }}</p>
+            </div>
+            <div class="col-md-6">
+              <p>
+                <strong>Müsait Kopya:</strong>
+                {% if book.available_quantity > 0 %}
+                <span class="badge bg-success"
+                  >{{ book.available_quantity }} adet</span
+                >
+                {% else %}
+                <span class="badge bg-danger">Müsait Değil</span>
+                {% endif %}
+              </p>
+              <p>
+                <strong>Toplam Ödünç Alınma:</strong> {{ book.total_borrows }}
+                kez
+              </p>
+            </div>
+          </div>
+
+          {% if book.description %}
+          <div class="mb-3">
+            <h5>Kitap Açıklaması</h5>
+            <p>{{ book.description }}</p>
+          </div>
+          {% endif %} {% if book.available_quantity > 0 and session.get('role')
+          != 'admin' %}
+          <form
+            action="{{ url_for('borrow_book', book_id=book.id) }}"
+            method="POST"
+            class="d-inline"
+          >
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-book"></i> Ödünç Al
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Ödünç Alma Geçmişi -->
+      {% if borrow_history %}
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Ödünç Alma Geçmişi</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Kullanıcı</th>
+                  <th>Ödünç Alma Tarihi</th>
+                  <th>İade Tarihi</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for borrow in borrow_history %}
+                <tr>
+                  <td>
+                    {{ borrow[3] }} {% if borrow[4] == 'admin' %}
+                    <span class="badge bg-primary">Admin</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ borrow[0].strftime('%d.%m.%Y') }}</td>
+                  <td>
+                    {% if borrow[1] %} {{ borrow[1].strftime('%d.%m.%Y') }} {%
+                    else %} - {% endif %}
+                  </td>
+                  <td>
+                    {% if borrow[2] == 'active' %}
+                    <span class="badge bg-primary">Aktif</span>
+                    {% elif borrow[2] == 'returned' %}
+                    <span class="badge bg-success">İade Edildi</span>
+                    {% else %}
+                    <span class="badge bg-danger">Gecikmiş</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

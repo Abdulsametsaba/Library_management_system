@@ -1,0 +1,68 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <h2>Ödünç Aldığım Kitaplar</h2>
+
+  {% if borrows %}
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Kitap</th>
+          <th>Ödünç Alma Tarihi</th>
+          <th>Son İade Tarihi</th>
+          <th>Durum</th>
+          <th>Gecikme</th>
+          <th>İşlemler</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for borrow in borrows %}
+        <tr>
+          <td>{{ borrow[1] }}</td>
+          <td>{{ borrow[2].strftime('%d.%m.%Y') }}</td>
+          <td>{{ borrow[3].strftime('%d.%m.%Y') }}</td>
+          <td>
+            {% if borrow[4] == 'active' %}
+            <span class="badge bg-primary">Aktif</span>
+            {% elif borrow[4] == 'returned' %}
+            <span class="badge bg-success">İade Edildi</span>
+            {% else %}
+            <span class="badge bg-danger">Gecikmiş</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if borrow[5] %}
+            <span class="text-danger">{{ borrow[5].days }} gün</span>
+            {% else %} - {% endif %}
+          </td>
+          <td>
+            {% if borrow[4] == 'active' %}
+            <form
+              method="POST"
+              action="{{ url_for('return_book', borrow_id=borrow[0]) }}"
+              class="d-inline"
+            >
+              <button
+                type="submit"
+                class="btn btn-sm btn-success"
+                onclick="return confirm('Bu kitabı iade etmek istediğinizden emin misiniz?')"
+              >
+                <i class="fas fa-undo"></i> İade Et
+              </button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-info">Henüz ödünç aldığınız kitap bulunmuyor.</div>
+  {% endif %}
+
+  <a href="{{ url_for('books') }}" class="btn btn-primary mt-3">
+    <i class="fas fa-book"></i> Kitap Listesine Dön
+  </a>
+</div>
+{% endblock %}

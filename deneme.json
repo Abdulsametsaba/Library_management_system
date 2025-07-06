@@ -1,0 +1,181 @@
+{
+  "info": {
+    "name": "Kütüphane Yönetim Sistemi",
+    "description": "Kütüphane Yönetim Sistemi API Testleri",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Kullanıcı İşlemleri",
+      "item": [
+        {
+          "name": "Kayıt Ol",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/register",
+              "host": ["{{base_url}}"],
+              "path": ["register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"test_user\",\n    \"email\": \"test@example.com\",\n    \"password\": \"test123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Giriş Yap",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/login",
+              "host": ["{{base_url}}"],
+              "path": ["login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"test_user\",\n    \"password\": \"test123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Kitap İşlemleri",
+      "item": [
+        {
+          "name": "Kitap Listesi",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/books",
+              "host": ["{{base_url}}"],
+              "path": ["books"]
+            }
+          }
+        },
+        {
+          "name": "Google Books API ile Kitap Ara",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/books/search?q=harry+potter",
+              "host": ["{{base_url}}"],
+              "path": ["books", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "harry potter"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Yeni Kitap Ekle",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/books/add",
+              "host": ["{{base_url}}"],
+              "path": ["books", "add"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Test Kitabı\",\n    \"isbn\": \"9789750719395\",\n    \"category_id\": 1,\n    \"author\": \"Test Yazar\",\n    \"quantity\": 5,\n    \"description\": \"Test açıklama\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Kitap Detayı",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/books/1",
+              "host": ["{{base_url}}"],
+              "path": ["books", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ödünç Alma İşlemleri",
+      "item": [
+        {
+          "name": "Kitap Ödünç Al",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/books/1/borrow",
+              "host": ["{{base_url}}"],
+              "path": ["books", "1", "borrow"]
+            }
+          }
+        },
+        {
+          "name": "Ödünç Alınan Kitapları Listele",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/my-borrows",
+              "host": ["{{base_url}}"],
+              "path": ["my-borrows"]
+            }
+          }
+        },
+        {
+          "name": "Kitap İade Et",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/borrows/1/return",
+              "host": ["{{base_url}}"],
+              "path": ["borrows", "1", "return"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Raporlar",
+      "item": [
+        {
+          "name": "Raporları Görüntüle",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/reports",
+              "host": ["{{base_url}}"],
+              "path": ["reports"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    }
+  ]
+}

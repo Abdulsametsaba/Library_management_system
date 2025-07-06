@@ -1,0 +1,122 @@
+{% extends "base.html" %} {% block content %}
+<div class="container mt-4">
+  <h2>Raporlar ve İstatistikler</h2>
+
+  <div class="row mt-4">
+    <!-- En Çok Okunan Kitaplar -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">En Çok Okunan Kitaplar</h5>
+        </div>
+        <div class="card-body">
+          {% if popular_books %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Kitap</th>
+                  <th>Ödünç Alma Sayısı</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for book in popular_books %}
+                <tr>
+                  <td>{{ book[0] }}</td>
+                  <td>{{ book[1] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">Henüz veri bulunmuyor.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Aktif Ödünç Almalar -->
+    <div class="col-md-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Aktif Ödünç Almalar</h5>
+        </div>
+        <div class="card-body">
+          {% if active_borrows %}
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Kitap</th>
+                  <th>Kullanıcı</th>
+                  <th>Son İade Tarihi</th>
+                  <th>Gecikme</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for borrow in active_borrows %}
+                <tr>
+                  <td>{{ borrow[0] }}</td>
+                  <td>{{ borrow[1] }}</td>
+                  <td>{{ borrow[3].strftime('%d.%m.%Y') }}</td>
+                  <td>
+                    {% if borrow[4] %}
+                    <span class="text-danger">{{ borrow[4].days }} gün</span>
+                    {% else %} - {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">Aktif ödünç alma bulunmuyor.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Gecikmiş İadeler -->
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">Gecikmiş İadeler</h5>
+        </div>
+        <div class="card-body">
+          {% if overdue_borrows %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Kitap</th>
+                  <th>Kullanıcı</th>
+                  <th>Ödünç Alma Tarihi</th>
+                  <th>Son İade Tarihi</th>
+                  <th>Gecikme</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for borrow in overdue_borrows %}
+                <tr>
+                  <td>{{ borrow[0] }}</td>
+                  <td>{{ borrow[1] }}</td>
+                  <td>{{ borrow[2].strftime('%d.%m.%Y') }}</td>
+                  <td>{{ borrow[3].strftime('%d.%m.%Y') }}</td>
+                  <td>
+                    <span class="text-danger">{{ borrow[4].days }} gün</span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">Gecikmiş iade bulunmuyor.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

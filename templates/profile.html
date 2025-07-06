@@ -1,0 +1,206 @@
+{% extends "base.html" %} {% block title %}Profil - Kütüphane Yönetim Sistemi{%
+endblock %} {% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <!-- Profil Kartı -->
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body text-center">
+          <div class="mb-4">
+            <div class="avatar-circle mx-auto mb-3">
+              <i class="fas fa-user fa-3x"></i>
+            </div>
+            <h3 class="card-title">{{ user.username }}</h3>
+            <span
+              class="badge {% if user.role == 'admin' %}bg-primary{% else %}bg-success{% endif %}"
+            >
+              {% if user.role == 'admin' %}
+              <i class="fas fa-shield-alt"></i> Yönetici {% else %}
+              <i class="fas fa-user-graduate"></i> Öğrenci {% endif %}
+            </span>
+          </div>
+          <div class="text-muted mb-3">
+            <p class="mb-1"><i class="fas fa-envelope"></i> {{ user.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      {% if session.get('role') != 'admin' %}
+      <!-- Ödünç Alma İstatistikleri -->
+      <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+          <h5 class="card-title mb-4">
+            <i class="fas fa-chart-pie"></i> Ödünç Alma İstatistikleri
+          </h5>
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="stat-circle bg-primary">
+                <i class="fas fa-book"></i>
+              </div>
+              <h4 class="mt-2">{{ active_borrows }}</h4>
+              <small class="text-muted">Aktif</small>
+            </div>
+            <div class="col-4">
+              <div class="stat-circle bg-success">
+                <i class="fas fa-check"></i>
+              </div>
+              <h4 class="mt-2">{{ returned_borrows }}</h4>
+              <small class="text-muted">İade</small>
+            </div>
+            <div class="col-4">
+              <div class="stat-circle bg-danger">
+                <i class="fas fa-clock"></i>
+              </div>
+              <h4 class="mt-2">{{ overdue_borrows }}</h4>
+              <small class="text-muted">Gecikme</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Profil Düzenleme Formu -->
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title mb-4">
+            <i class="fas fa-user-edit"></i> Profil Bilgilerini Düzenle
+          </h4>
+          <form method="POST">
+            <div class="mb-3">
+              <label class="form-label">E-posta Adresi</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-envelope"></i>
+                </span>
+                <input
+                  type="email"
+                  class="form-control"
+                  name="email"
+                  value="{{ user.email }}"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Mevcut Şifre</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input
+                  type="password"
+                  class="form-control"
+                  name="current_password"
+                  required
+                />
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Yeni Şifre (Opsiyonel)</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-key"></i>
+                </span>
+                <input
+                  type="password"
+                  class="form-control"
+                  name="new_password"
+                />
+              </div>
+              <small class="text-muted"
+                >Şifrenizi değiştirmek istemiyorsanız boş bırakın.</small
+              >
+            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save"></i> Değişiklikleri Kaydet
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .avatar-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--primary-color), #2980b9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .stat-circle.bg-primary {
+    background: linear-gradient(135deg, var(--primary-color), #2980b9);
+  }
+
+  .stat-circle.bg-success {
+    background: linear-gradient(135deg, var(--success-color), #27ae60);
+  }
+
+  .stat-circle.bg-danger {
+    background: linear-gradient(135deg, var(--danger-color), #c0392b);
+  }
+
+  .input-group-text {
+    background: linear-gradient(135deg, var(--primary-color), #2980b9);
+    color: white;
+    border: none;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+  }
+
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .badge {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .badge.bg-primary {
+    background: linear-gradient(
+      135deg,
+      var(--primary-color),
+      #2980b9
+    ) !important;
+  }
+
+  .badge.bg-success {
+    background: linear-gradient(
+      135deg,
+      var(--success-color),
+      #27ae60
+    ) !important;
+  }
+</style>
+{% endblock %}

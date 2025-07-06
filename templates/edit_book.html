@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Kitap Düzenle - Kütüphane Yönetim Sistemi{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">Kitabı Düzenle</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Kitap Adı</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ book.title }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="isbn" class="form-label">ISBN</label>
+                            <input type="text" class="form-control" id="isbn" name="isbn" value="{{ book.isbn }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Kategori</label>
+                            <select class="form-select" id="category_id" name="category_id" required>
+                                <option value="">Kategori Seçin</option>
+                                {% for category in categories %}
+                                <option value="{{ category[0] }}" {% if category[0] == book.category_id %}selected{% endif %}>
+                                    {{ category[1] }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="author" class="form-label">Yazar</label>
+                            <input type="text" class="form-control" id="author" name="author" value="{{ book.author_name }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label">Kopya Sayısı</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="{{ book.quantity }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Kitap Açıklaması</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ book.description }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cover_image" class="form-label">Kapak Resmi</label>
+                            {% if book.cover_image %}
+                            <div class="mb-2">
+                                <img src="{{ url_for('static', filename='uploads/covers/' + book.cover_image) }}" 
+                                     alt="Mevcut kapak resmi" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                            {% endif %}
+                            <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+                            <div class="form-text">Desteklenen formatlar: PNG, JPG, JPEG, GIF</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Değişiklikleri Kaydet
+                            </button>
+                            <a href="{{ url_for('book_detail', book_id=book.id) }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> İptal
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,119 @@
+{% extends "base.html" %} {% block title %}Ana Sayfa - Kütüphane Yönetim
+Sistemi{% endblock %} {% block content %}
+<div class="container mt-4">
+  <!-- Hero Section -->
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div class="card bg-dark text-white">
+        <img style="height: 400px; object-fit: cover; opacity: 0.7" />
+        <div
+          class="card-img-overlay d-flex flex-column justify-content-center text-center"
+        >
+          <h1 class="display-4 fw-bold">Kütüphane Yönetim Sistemi</h1>
+          <p class="lead">
+            Binlerce kitaba kolayca erişin, ödünç alın ve yönetin.
+          </p>
+          {% if not session.get('user_id') %}
+          <div class="mt-4">
+            <a
+              href="{{ url_for('register') }}"
+              class="btn btn-primary btn-lg me-2"
+            >
+              <i class="fas fa-user-plus"></i> Hemen Kayıt Ol
+            </a>
+            <a
+              href="{{ url_for('login') }}"
+              class="btn btn-outline-light btn-lg"
+            >
+              <i class="fas fa-sign-in-alt"></i> Giriş Yap
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Özellikler -->
+  <div class="row mb-5">
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-book fa-3x text-primary mb-3"></i>
+          <h3 class="card-title">Geniş Kitap Koleksiyonu</h3>
+          <p class="card-text">
+            Binlerce kitap arasından seçim yapın, kategorilere göre filtreleyin
+            ve istediğiniz kitabı bulun.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-clock fa-3x text-success mb-3"></i>
+          <h3 class="card-title">Kolay Ödünç Alma</h3>
+          <p class="card-text">
+            Tek tıkla kitap ödünç alın, iade tarihlerinizi takip edin ve gecikme
+            durumunda bildirim alın.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center">
+          <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+          <h3 class="card-title">Detaylı İstatistikler</h3>
+          <p class="card-text">
+            Okuma alışkanlıklarınızı takip edin, en çok okunan kitapları görün
+            ve öneriler alın.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Son Eklenen Kitaplar -->
+  {% if session.get('user_id') %}
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="mb-4">Son Eklenen Kitaplar</h2>
+      <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for book in recent_books %}
+        <div class="col">
+          <div class="card h-100 border-0 shadow-sm">
+            {% if book.cover_image %}
+            <img
+              src="{{ url_for('static', filename='uploads/covers/' + book.cover_image) }}"
+              class="card-img-top"
+              alt="{{ book.title }}"
+              style="height: 200px; object-fit: cover"
+            />
+            {% else %}
+            <img
+              src="{{ url_for('static', filename='images/no-cover.jpg') }}"
+              class="card-img-top"
+              alt="Kapak resmi yok"
+              style="height: 200px; object-fit: cover"
+            />
+            {% endif %}
+            <div class="card-body">
+              <h5 class="card-title">{{ book.title }}</h5>
+              <p class="card-text text-muted">{{ book.author_name }}</p>
+              <a
+                href="{{ url_for('book_detail', book_id=book.id) }}"
+                class="btn btn-outline-primary btn-sm"
+              >
+                <i class="fas fa-info-circle"></i> Detaylar
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
